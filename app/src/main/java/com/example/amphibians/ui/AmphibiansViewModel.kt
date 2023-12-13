@@ -10,28 +10,28 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.amphibians.AmphibiansApplication
-import com.example.amphibians.data.AmphibianInformationRepository
-import com.example.amphibians.network.AmphibianInformation
+import com.example.amphibians.data.AmphibiansRepository
+import com.example.amphibians.network.Amphibian
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
 sealed interface AmphibiansUiState {
-    data class Success(val amphibians: List<AmphibianInformation>): AmphibiansUiState
+    data class Success(val amphibians: List<Amphibian>): AmphibiansUiState
     object Loading: AmphibiansUiState
     object Error: AmphibiansUiState
 }
 
 class AmphibiansViewModel(
-    private val amphibiansInformationRepository: AmphibianInformationRepository
+    private val amphibiansRepository: AmphibiansRepository
 ): ViewModel() {
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as AmphibiansApplication)
-                val amphibiansInformationRepository = application.container.amphibianInformationRepository
-                AmphibiansViewModel(amphibiansInformationRepository = amphibiansInformationRepository)
+                val amphibiansRepository = application.container.amphibiansRepository
+                AmphibiansViewModel(amphibiansRepository = amphibiansRepository)
             }
         }
     }
@@ -41,10 +41,10 @@ class AmphibiansViewModel(
     var amphibiansUiState: AmphibiansUiState by mutableStateOf(AmphibiansUiState.Loading)
         private set
 
-    private fun getAmphibians() {
+    fun getAmphibians() {
         viewModelScope.launch {
             amphibiansUiState = try {
-                AmphibiansUiState.Success(amphibiansInformationRepository.getAmphibianInformation())
+                AmphibiansUiState.Success(amphibiansRepository.getAmphibians())
             } catch (e: IOException) {
                 AmphibiansUiState.Error
             } catch (e: HttpException) {

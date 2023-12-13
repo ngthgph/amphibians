@@ -7,7 +7,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 
 interface AppContainer {
-    val amphibianInformationRepository: AmphibianInformationRepository
+    val amphibiansRepository: AmphibiansRepository
 }
 
 class DefaultAppContainer: AppContainer {
@@ -22,6 +22,6 @@ class DefaultAppContainer: AppContainer {
         retrofit.create(AmphibianApiService::class.java)
     }
 
-    override val amphibianInformationRepository: AmphibianInformationRepository =
-        NetworkAmphibianInformationRepository(retrofitService)
+    override val amphibiansRepository: AmphibiansRepository =
+        NetworkAmphibiansRepository(retrofitService)
 }
